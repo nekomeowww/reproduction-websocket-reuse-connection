@@ -11,7 +11,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/nekomeowww/ws-repro/pkg/utils"
 	"github.com/samber/lo"
 	"github.com/sirupsen/logrus"
 )
@@ -47,7 +46,7 @@ type WebsocketMessage[T any] struct {
 func HandleWebsocket(logger *logrus.Logger) func(*gin.Context) {
 	return func(ctx *gin.Context) {
 		// roomIDStr := ctx.Param("roomId") // uncomment this line to fix the issue
-		w, err := utils.NewWebsocket(upgrader, ctx.Writer, ctx.Request, logger)
+		websocketConn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 		if err != nil {
 			logger.Error(err)
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -58,6 +57,14 @@ func HandleWebsocket(logger *logrus.Logger) func(*gin.Context) {
 		}
 
 		go func() {
+			defer func() {
+				err = websocketConn.Close()
+				if err != nil {
+					logger.Error(err)
+					return
+				}
+			}()
+
 			for {
 				roomIDStr := ctx.Param("roomId") // comment this line to fix the issue
 				roomID, err := strconv.ParseInt(roomIDStr, 10, 64)
@@ -66,7 +73,7 @@ func HandleWebsocket(logger *logrus.Logger) func(*gin.Context) {
 					return
 				}
 
-				err = w.Conn.WriteMessage(websocket.TextMessage, lo.Must(json.Marshal(WebsocketMessage[*Messages]{
+				err = websocketConn.WriteMessage(websocket.TextMessage, lo.Must(json.Marshal(WebsocketMessage[*Messages]{
 					Type:   TypeSync,
 					RoomID: roomID,
 					Data: &Messages{
@@ -78,7 +85,12 @@ func HandleWebsocket(logger *logrus.Logger) func(*gin.Context) {
 				})))
 				if err != nil {
 					logger.Error(err)
-					w.Close()
+					err2 := websocketConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+					if err != nil {
+						logger.Error(err2)
+						return
+					}
+
 					return
 				}
 
