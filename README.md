@@ -27,4 +27,4 @@ Reproduction code for Websocket reused connection issue
 
 ## Issue demo
 
-![Figure1](https://github.com/nekomeowww/ws-repro/blob/main/images/screenshot-01.png)
+![Figure1](https://github.com/nekomeowww/websocket-reuse-connection-repro/blob/main/images/screenshot-01.png)
