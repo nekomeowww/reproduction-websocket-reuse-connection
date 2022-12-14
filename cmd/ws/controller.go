@@ -58,6 +58,12 @@ func HandleWebsocket(logger *logrus.Logger) func(*gin.Context) {
 
 		go func() {
 			defer func() {
+				err = websocketConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+				if err != nil {
+					logger.Error(err)
+					// PASS
+				}
+
 				err = websocketConn.Close()
 				if err != nil {
 					logger.Error(err)
@@ -85,11 +91,6 @@ func HandleWebsocket(logger *logrus.Logger) func(*gin.Context) {
 				})))
 				if err != nil {
 					logger.Error(err)
-					err2 := websocketConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-					if err != nil {
-						logger.Error(err2)
-						return
-					}
 
 					return
 				}
