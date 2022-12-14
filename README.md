@@ -12,7 +12,7 @@ Reproduction code for Websocket reused connection issue
 6. Run `go run cmd/ws/main.go ./cmd/ws/gin.go ./cmd/ws/server.go ./cmd/ws/controller.go` to start the backend server
 7. Open a new tab to access `localhost:3333` in your browser
 8. Type in a random number of room id and click `Go`
-9. Repeat the steps 5 and 6 for 2 to 4 times with different room id
+9. Repeat the steps 7 and 8 for 2 to 4 times with different room id
 10. You will notice the `Chat Room: <some number>` mismatched the `Room <some number>` down below
 
 ## Steps to fix
@@ -22,7 +22,7 @@ Reproduction code for Websocket reused connection issue
 3. Run `go run cmd/ws/main.go ./cmd/ws/gin.go ./cmd/ws/server.go ./cmd/ws/controller.go` to start the backend server
 4. Open a new tab to access `localhost:3333` in your browser
 5. Type in a random number of room id and click `Go`
-6. Repeat the steps 5 and 6 for 2 to 4 times with different room id
+6. Repeat the steps 4 and 5 for 2 to 4 times with different room id
 7. You will notice the `Chat Room: <some number>` will never mismatched the `Room <some number>` down below
 
 ## Issue demo
